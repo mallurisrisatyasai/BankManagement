@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bank Management System</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f6fa;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .Form {
+      display: none;
+    }
+
+    .Form.active {
+      display: block;
+    }
+
+    .Form h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .input-box {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .input-box i {
+      position: absolute;
+      top: 12px;
+      left: 10px;
+      color: #666;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 10px 10px 10px 35px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .input-box label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .forgot-section {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      width: 100%;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #34495e;
+    }
+
+    .social-media {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .social-media i {
+      font-size: 24px;
+      margin: 0 10px;
+      cursor: pointer;
+      color: #2c3e50;
+    }
+
+    .RegisterBtn, .LoginBtn {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .RegisterBtn a, .LoginBtn a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    /* Dashboard & Sidebar Styles */
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.active {
+      display: block;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background: #1a202c;
+      color: #e2e8f0;
+      padding: 20px 0;
+      transition: width 0.3s ease;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .sidebar.collapsed {
+      width: 80px;
+    }
+
+    .branding {
+      font-size: 1.8rem;
+      font-weight: 600;
+      padding: 0 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .branding .logo-text {
+      display: inline;
+    }
+
+    .sidebar.collapsed .branding .logo-text {
+      display: none;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      position: relative;
+      margin: 5px 0;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .nav-item a:hover {
+      background: #2d3748;
+    }
+
+    .nav-item i {
+      margin-right: 15px;
+      font-size: 1.2rem;
+    }
+
+    .sidebar.collapsed .nav-item a span {
+      display: none;
+    }
+
+    .sidebar.collapsed .nav-item a {
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .submenu {
+      list-style: none;
+      background: #2d3748;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .nav-item.active .submenu {
+      max-height: 200px;
+    }
+
+    .submenu li a {
+      padding: 10px 20px 10px 50px;
+      font-size: 0.9rem;
+    }
+
+    .sidebar.collapsed .submenu {
+      display: none;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      padding: 30px 40px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.collapsed ~ .main-content {
+      margin-left: 80px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 35px;
+    }
+
+    /* Stat Cards and Dashboard Elements */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      margin-bottom: 35px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    /* Tables */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      text-align: left;
+    }
+
+    th {
+      background: #2c3e50;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    /* Forms within main content */
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .action-btn {
+      background: #2c3e50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .cancel-btn {
+      background: #e74c3c;
+    }
+
+    /* Content Sections */
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 20px;
+      background: #2c3e50;
+      color: white;
+      border-radius: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 80px;
+      }
+      .sidebar.collapsed {
+        width: 80px;
+      }
+      .branding .logo-text {
+        display: none;
+      }
+      .nav-item a span {
+        display: none;
+      }
+      .nav-item a {
+        justify-content: center;
+        padding: 12px;
+      }
+      .submenu {
+        display: none;
+      }
+      .main-content {
+        margin-left: 80px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login/Register Container -->
+  <div class="container" id="auth-container">
+    <div class="Form login-form active">
+      <h2>SKY BANK - Login</h2>
+      <form>
+        <div class="input-box">
+          <i class="bx bxs-user"></i>
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" required placeholder="Enter Your Username" />
+        </div>
+        <div class="input-box">
+          <i class="bx bxs-lock-alt"></i>
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="Enter Your Password" />
+        </div>
+        <div class="forgot-section">
+          <span><input type="checkbox" /> Remember Me</span>
+          <span><a href="#">Forgot Password?</a></span>
+        </div>
+        <button class="btn" id="login-submit">Login</button>
+      </form>
+      <p class="RegisterBtn"><a href="#">Register Now</a></p>
+    </div>
+
+    <div class="Form Register-form">
+      <h2>SKY BANK - Register</h2>
+      <form>
+        <div class="input-box">
+          <i class="bx bxs-user"></i>
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" required placeholder="Enter Your Username" />
+        </div>
+        <div class="input-box">
+          <i class="bx bxs-lock-alt"></i>
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" required placeholder="Enter Your Password" />
+        </div>
+        <div class="input-box">
+          <i class="bx bxs-lock-alt"></i>
+          <label for="reg-confirm">Confirm Password</label>
+          <input type="password" id="reg-confirm" required placeholder="Confirm Your Password" />
+        </div>
+        <div class="forgot-section">
+          <span><input type="checkbox" /> I agree to Terms & Conditions</span>
+        </div>
+        <button class="btn" id="register-submit">Register</button>
+      </form>
+      <p class="LoginBtn"><a href="#">Login Now</a></p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+    <nav class="sidebar">
+      <div class="branding">
+        <span class="logo-text">SKY BANK</span>
+        <button class="toggle-btn"><i class="fas fa-bars"></i></button>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#" id="dashboard-link"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        </li>
+        <li class="nav-item">
+          <a href="AccountManangement.html" class="dropdown-toggle"><i class="fas fa-users"></i><span>Account Management</span></a>
+          <ul class="submenu">
+            <li><a href="#" id="create-account-link">Create Account</a></li>
+            <li><a href="#" id="view-accounts-link">View Accounts</a></li>
+            <li><a href="#" id="search-account-link">Search Account</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="Transaction.html" class="dropdown-toggle"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a>
+          <ul class="submenu">
+            <li><a href="#" id="deposit-link">Deposit</a></li>
+            <li><a href="#" id="withdraw-link">Withdraw</a></li>
+            <li><a href="#" id="transaction-history-link">Transaction History</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="LoanManagement.html" class="dropdown-toggle"><i class="fas fa-hand-holding-usd"></i><span>Loan Management</span></a>
+          <ul class="submenu">
+            <li><a href="#" id="apply-loan-link">Apply for Loan</a></li>
+            <li><a href="#" id="process-loans-link">Process Loan Requests</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="CustomerService.html" class="dropdown-toggle"><i class="fas fa-users-cog"></i><span>Customer Service</span></a>
+          <ul class="submenu">
+            <li><a href="#" id="add-customer-queue-link">Add to Queue</a></li>
+            <li><a href="#" id="serve-customer-link">Serve Next Customer</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <header class="header">
+        <h1 id="page-title">DASHBOARD</h1>
+        <div class="user-info">
+          <h3>Admin User</h3>
+          <p>admin@bank.in</p>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <div class="content-section dashboard-section active" id="dashboard-section">
+        <div class="stats-grid">
+          <div class="stat-card"><h3>TOTAL ACCOUNTS</h3><p class="stat-value" id="total-accounts">3</p></div>
+          <div class="stat-card"><h3>SAVINGS ACCOUNTS</h3><p class="stat-value" id="savings-accounts">2</p></div>
+          <div class="stat-card"><h3>CURRENT ACCOUNTS</h3><p class="stat-value" id="current-accounts">1</p></div>
+          <div class="stat-card"><h3>CUSTOMERS IN QUEUE</h3><p class="stat-value" id="customer-queue">0</p></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><h3>BANK BALANCE</h3><p class="stat-value" id="bank-balance">₹ 15,700</p></div>
+          <div class="stat-card"><h3>PENDING LOANS</h3><p class="stat-value" id="pending-loans">0</p></div>
+          <div class="stat-card"><h3>APPROVED LOANS</h3><p class="stat-value" id="approved-loans">0</p></div>
+          <div class="stat-card"><h3>TOTAL TRANSACTIONS</h3><p class="stat-value" id="total-transactions">3</p></div>
+        </div>
+        <div class="table-container">
+          <h2>RECENT TRANSACTIONS</h2>
+          <table id="recent-transactions-table">
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>Account</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Date & Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TXN5362</td>
+                <td>AC001</td>
+                <td>Initial Deposit</td>
+                <td>₹ 5,000</td>
+                <td>2025-04-14 09:30:22</td>
+              </tr>
+              <tr>
+                <td>TXN7841</td>
+                <td>AC002</td>
+                <td>Initial Deposit</td>
+                <td>₹ 7,500</td>
+                <td>2025-04-14 09:30:22</td>
+              </tr>
+              <tr>
+                <td>TXN1209</td>
+                <td>AC003</td>
+                <td>Initial Deposit</td>
+                <td>₹ 3,200</td>
+                <td>2025-04-14 09:30:22</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Create Account Section -->
+      <div class="content-section" id="create-account-section">
+        <div class="form-container">
+          <h2>Create New Account</h2>
+          <form id="create-account-form">
+            <div class="form-group">
+              <label for="account-number">Account Number</label>
+              <input type="text" id="account-number" required placeholder="Enter Account Number">
+            </div>
+            <div class="form-group">
+              <label for="customer-name">Customer Name</label>
+              <input type="text" id="customer-name" required placeholder="Enter Customer Name">
+            </div>
+            <div class="form-group">
+              <label for="account-type">Account Type</label>
+              <select id="account-type">
+                <option value="current">Current Account</option>
+                <option value="savings">Savings Account</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="initial-deposit">Initial Deposit (₹)</label>
+              <input type="number" id="initial-deposit" required placeholder="Enter Initial Deposit Amount">
+            </div>
+            <button type="submit" class="action-btn">Create Account</button>
+            <button type="button" class="action-btn cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- View Accounts Section -->
+      <div class="content-section" id="view-accounts-section">
+        <div class="table-container">
+          <h2>All Bank Accounts</h2>
+          <table id="accounts-table">
+            <thead>
+              <tr>
+                <th>Account Number</th>
+                <th>Customer Name</th>
+                <th>Account Type</th>
+                <th>Balance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AC001</td>
+                <td>Bhargav</td>
+                <td>Savings</td>
+                <td>₹ 5,000</td>
+                <td>
+                  <button class="action-btn">View</button>
+                  <button class="action-btn">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td>AC002</td>
+                <td>Akash</td>
+                <td>Current</td>
+                <td>₹ 7,500</td>
+                <td>
+                  <button class="action-btn">View</button>
+                  <button class="action-btn">Edit</button>
+                </td>
+              </tr>
+              <tr>
+                <td>AC003</td>
+                <td>Bhaskar</td>
+                <td>Savings</td>
+                <td>₹ 3,200</td>
+                <td>
+                  <button class="action-btn">View</button>
+                  <button class="action-btn">Edit</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Search Account Section -->
+      <div class="content-section" id="search-account-section">
+        <div class="form-container">
+          <h2>Search for Account</h2>
+          <div class="form-group">
+            <label for="search-account-number">Account Number</label>
+            <input type="text" id="search-account-number" placeholder="Enter Account Number">
+          </div>
+          <button id="search-account-btn" class="action-btn">Search</button>
+          
+          <div id="search-result" style="margin-top: 20px; display: none;">
+            <h3>Account Details</h3>
+            <div class="form-group">
+              <label>Account Number:</label>
+              <p id="result-account-number">-</p>
+            </div>
+            <div class="form-group">
+              <label>Customer Name:</label>
+              <p id="result-customer-name">-</p>
+            </div>
+            <div class="form-group">
+              <label>Account Type:</label>
+              <p id="result-account-type">-</p>
+            </div>
+            <div class="form-group">
+              <label>Current Balance:</label>
+              <p id="result-balance">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deposit Section -->
+      <div class="content-section" id="deposit-section">
+        <div class="form-container">
+          <h2>Deposit Money</h2>
+          <form id="deposit-form">
+            <div class="form-group">
+              <label for="deposit-account-number">Account Number</label>
+              <input type="text" id="deposit-account-number" required placeholder="Enter Account Number">
+            </div>
+            <div class="form-group">
+              <label for="deposit-amount">Amount (₹)</label>
+              <input type="number" id="deposit-amount" required placeholder="Enter Deposit Amount">
+            </div>
+            <button type="submit" class="action-btn">Make Deposit</button>
+            <button type="button" class="action-btn cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Withdraw Section -->
+      <div class="content-section" id="withdraw-section">
+        <div class="form-container">
+          <h2>Withdraw Money</h2>
+          <form id="withdraw-form">
+            <div class="form-group">
+              <label for="withdraw-account-number">Account Number</label>
+              <input type="text" id="withdraw-account-number" required placeholder="Enter Account Number">
+            </div>
+            <div class="form-group">
+              <label for="withdraw-amount">Amount (₹)</label>
+              <input type="number" id="withdraw-amount" required placeholder="Enter Withdrawal Amount">
+            </div>
+            <button type="submit" class="action-btn">Make Withdrawal</button>
+            <button type="button" class="action-btn cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Transaction History Section -->
+      <div class="content-section" id="transaction-history-section">
+        <div class="form-container">
+          <h2>View Transaction History</h2>
+          <div class="form-group">
+            <label for="history-account-number">Account Number</label>
+            <input type="text" id="history-account-number" placeholder="Enter Account Number">
+          </div>
+          <button id="view-history-btn" class="action-btn">View History</button>
+          
+          <div class="table-container" style="margin-top: 20px; display: none;" id="transaction-history-result">
+            <h3>Transaction History</h3>
+            <div style="margin-bottom: 10px;">
+              <button class="action-btn" id="oldest-first-btn">Oldest First</button>
+              <button class="action-btn" id="newest-first-btn">Newest First</button>
+            </div>
+            <table id="transaction-history-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Will be populated with data -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Apply for Loan Section -->
+      <div class="content-section" id="apply-loan-section">
+        <div class="form-container">
+          <h2>Apply for Loan</h2>
+          <form id="loan-application-form">
+            <div class="form-group">
+              <label for="loan-account-number">Account Number</label>
+              <input type="text" id="loan-account-number" required placeholder="Enter Account Number">
+            </div>
+            <div class="form-group">
+              <label for="loan-amount">Loan Amount (₹)</label>
+              <input type="number" id="loan-amount" required placeholder="Enter Loan Amount">
+            </div>
+            <div class="form-group">
+              <label for="loan-purpose">Purpose of Loan</label>
+              <select id="loan-purpose">
+                <option value="personal">Personal</option>
+                <option value="business">Business</option>
+                <option value="education">Education</option>
+                <option value="housing">Housing</option>
+              </select>
+            </div>
+            <button type="submit" class="action-btn">Apply for Loan</button>
+            <button type="button" class="action-btn cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Process Loans Section -->
+      <div class="content-section" id="process-loans-section">
+        <div class="table-container">
+          <h2>Pending Loan Applications</h2>
+          <table id="pending-loans-table">
+            <thead>
+              <tr>
+                <th>Account Number</th>
+                <th>Amount</th>
+                <th>Purpose</th>
+                <th>Application Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Will be populated with data when there are pending loans -->
+              <tr>
+                <td colspan="5" class="no-data">No pending loan applications</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add Customer to Queue Section -->
+      <div class="content-section" id="add-customer-queue-section">
+        <div class="form-container">
+          <h2>Add Customer to Service Queue</h2>
+          <form id="customer-queue-form">
+            <div class="form-group">
+              <label for="queue-account-number">Account Number</label>
+              <input type="text" id="queue-account-number" required placeholder="Enter Account Number">
+            </div>
+            <div class="form-group">
+              <label for="service-type">Service Required</label>
+              <select id="service-type">
+                <option value="general">General Inquiry</option>
+                <option value="account">Account Services</option>
+                <option value="loan">Loan Services</option>
+                <option value="card">Card Services</option>
+              </select>
+            </div>
+            <button type="submit" class="action-btn">Add to Queue</button>
+          </form>
+        </div>
+        
+        <div class="table-container" style="margin-top: 20px;">
+          <h2>Current Service Queue</h2>
+          <table id="service-queue-table">
+            <thead>
+              <tr>
+                <th>Position</th>
+                <th>Account Number</th>
+                <th>Customer Name</th>
+                <th>Service Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Will be populated with data when there are customers in queue -->
+              <tr>
+                <td colspan="4" class="no-data">Queue is empty</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Serve Customer Section -->
+      <div class="content-section" id="serve-customer-section">
+        <div class="form-container">
+          <h2>Serve Next Customer</h2>
+          <div id="no-customers" style="display: block;">
+            <p>No customers waiting in the queue.</p>
+          </div>
+          <div id="next-customer" style="display: none;">
+            <h3>Now Serving</h3>
+            <div class="form-group">
+              <label>Account Number:</label>
+              <p id="serving-account-number">-</p>
+            </div>
+            <div class="form-group">
+              <label>Customer Name:</label>
+              <p id="serving-customer-name">-</p>
+            </div>
+            <div class="form-group">
+              <label>Service Required:</label>
+              <p id="serving-service-type">-</p>
+            </div>
+            <button id="complete-service-btn" class="action-btn">Complete Service</button>
+          </div>
+          <button id="serve-next-btn" class="action-btn">Serve Next Customer</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Bank Management System Class
+    class Account {
+      constructor(accountNumber, customerName, accountType, balance) {
+        this.accountNumber = accountNumber;
+        this.customerName = customerName;
+        this.accountType = accountType;
+        this.balance = balance;
+        this.transactionHistory = [];
+        // Add initial deposit transaction
+        this.addTransaction('Initial Deposit', balance);
+      }
+
+      addTransaction(type, amount) {
+        const transaction = {
+          id: 'TXN' + Math.floor(Math.random() * 10000),
+          type: type,
+          amount: amount,
+          date: new Date().toISOString()
+        };
+        this.transactionHistory.push(transaction);
+        return transaction;
+      }
+
+      deposit(amount) {
+        this.balance += amount;
+        return this.addTransaction('Deposit', amount);
+      }
+
+      withdraw(amount) {
+        if (this.balance >= amount) {
+          this.balance -= amount;
+          return this.addTransaction('Withdrawal', -amount);
+        }
+        return false;
+      }
+
+      getTransactionHistory(order = 'newest') {
+        if (order === 'newest') {
+          return [...this.transactionHistory].reverse();
+        }
+        return this.transactionHistory;
+      }
+    }
+
+    class LoanApplication {
+      constructor(accountNumber, amount, purpose) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+        this.purpose = purpose;
+        this.status = 'pending';
+        this.applicationDate = new Date().toISOString();
+      }
+    }
+
+    class CustomerQueue {
+      constructor() {
+        this.queue = [];
+      }
+
+      addToQueue(accountNumber, serviceType) {
+        this.queue.push({
+          accountNumber: accountNumber,
+          serviceType: serviceType,
+          queuePosition: this.queue.length + 1
+        });
+      }
+
+      serveNext() {
+        if (this.queue.length === 0) return null;
+        return this.queue.shift();
+      }
+
+      getQueue() {
+        return this.queue;
+      }
+    }
+
+    class BankManagementSystem {
+      constructor() {
+        this.accounts = [];
+        this.loanApplications = [];
+        this.customerQueue = new CustomerQueue();
+        this.bankBalance = 0;
+        this.currentUser = null;
+      }
+
+      createAccount(accountNumber, customerName, accountType, initialDeposit) {
+        if (this.getAccount(accountNumber)) {
+          return false; // Account already exists
+        }
+        const account = new Account(accountNumber, customerName, accountType, initialDeposit);
+        this.accounts.push(account);
+        this.bankBalance += initialDeposit;
+        return account;
+      }
+
+      getAccount(accountNumber) {
+        return this.accounts.find(acc => acc.accountNumber === accountNumber);
+      }
+
+      deposit(accountNumber, amount) {
+        const account = this.getAccount(accountNumber);
+        if (!account) return false;
+        const transaction = account.deposit(amount);
+        this.bankBalance += amount;
+        return transaction;
+      }
+
+      withdraw(accountNumber, amount) {
+        const account = this.getAccount(accountNumber);
+        if (!account) return false;
+        const transaction = account.withdraw(amount);
+        if (transaction) {
+          this.bankBalance -= amount;
+        }
+        return transaction;
+      }
+
+      applyForLoan(accountNumber, amount, purpose) {
+        if (!this.getAccount(accountNumber)) return false;
+        const loan = new LoanApplication(accountNumber, amount, purpose);
+        this.loanApplications.push(loan);
+        return loan;
+      }
+
+      processLoan(accountNumber, approve) {
+        const loanIndex = this.loanApplications.findIndex(
+          loan => loan.accountNumber === accountNumber && loan.status === 'pending'
+        );
+        if (loanIndex === -1) return false;
+        
+        const loan = this.loanApplications[loanIndex];
+        loan.status = approve ? 'approved' : 'rejected';
+        
+        if (approve) {
+          this.deposit(accountNumber, loan.amount);
+        }
+        
+        return loan;
+      }
+
+      getPendingLoans() {
+        return this.loanApplications.filter(loan => loan.status === 'pending');
+      }
+
+      getApprovedLoans() {
+        return this.loanApplications.filter(loan => loan.status === 'approved');
+      }
+
+      addCustomerToQueue(accountNumber, serviceType) {
+        if (!this.getAccount(accountNumber)) return false;
+        this.customerQueue.addToQueue(accountNumber, serviceType);
+        return true;
+      }
+
+      serveNextCustomer() {
+        return this.customerQueue.serveNext();
+      }
+
+      getCurrentQueue() {
+        return this.customerQueue.getQueue();
+      }
+
+      login(username, password) {
+        // In a real system, this would verify against a database
+        if (username === 'admin' && password === 'admin123') {
+          this.currentUser = {
+            username: 'admin',
+            email: 'admin@bank.in',
+            role: 'admin'
+          };
+          return true;
+        }
+        return false;
+      }
+
+      logout() {
+        this.currentUser = null;
+      }
+
+      getStats() {
+        return {
+          totalAccounts: this.accounts.length,
+          savingsAccounts: this.accounts.filter(acc => acc.accountType === 'savings').length,
+          currentAccounts: this.accounts.filter(acc => acc.accountType === 'current').length,
+          customerQueue: this.getCurrentQueue().length,
+          bankBalance: this.bankBalance,
+          pendingLoans: this.getPendingLoans().length,
+          approvedLoans: this.getApprovedLoans().length,
+          totalTransactions: this.accounts.reduce((sum, acc) => sum + acc.transactionHistory.length, 0)
+        };
+      }
+
+      getRecentTransactions() {
+        let allTransactions = [];
+        this.accounts.forEach(account => {
+          account.transactionHistory.forEach(transaction => {
+            allTransactions.push({
+              ...transaction,
+              accountNumber: account.accountNumber
+            });
+          });
+        });
+        
+        // Sort by date (newest first) and take top 5
+        return allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+      }
+    }
+
+    // UI Controller
+    class UIController {
+      constructor() {
+        this.bankSystem = new BankManagementSystem();
+        this.initializeSampleData();
+        this.initEventListeners();
+      }
+
+      initializeSampleData() {
+        // Create some sample accounts
+        this.bankSystem.createAccount('AC001', 'Bhargav', 'savings', 5000);
+        this.bankSystem.createAccount('AC002', 'Akash', 'current', 7500);
+        this.bankSystem.createAccount('AC003', 'Bhaskar', 'savings', 3200);
+      }
+
+      initEventListeners() {
+        // Login/Register Toggle
+        document.querySelector('.RegisterBtn a').addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelector('.login-form').classList.remove('active');
+          document.querySelector('.Register-form').classList.add('active');
+        });
+
+        document.querySelector('.LoginBtn a').addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelector('.Register-form').classList.remove('active');
+          document.querySelector('.login-form').classList.add('active');
+        });
+
+        // Login Submit
+        document.getElementById('login-submit').addEventListener('click', (e) => {
+          e.preventDefault();
+          const username = document.getElementById('login-username').value;
+          const password = document.getElementById('login-password').value;
+          
+          if (this.bankSystem.login(username, password)) {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            this.updateDashboard();
+          } else {
+            alert('Invalid username or password');
+          }
+        });
+
+        // Register Submit (simplified for demo)
+        document.getElementById('register-submit').addEventListener('click', (e) => {
+          e.preventDefault();
+          alert('Registration functionality would be implemented here');
+        });
+
+        // Sidebar Toggle
+        document.querySelector('.toggle-btn').addEventListener('click', () => {
+          document.querySelector('.sidebar').classList.toggle('collapsed');
+        });
+
+        // Navigation Links
+        document.getElementById('dashboard-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('dashboard-section');
+        });
+
+        document.getElementById('create-account-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('create-account-section');
+        });
+
+        document.getElementById('view-accounts-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('view-accounts-section');
+          this.updateAccountsTable();
+        });
+
+        document.getElementById('search-account-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('search-account-section');
+        });
+
+        document.getElementById('deposit-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('deposit-section');
+        });
+
+        document.getElementById('withdraw-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('withdraw-section');
+        });
+
+        document.getElementById('transaction-history-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('transaction-history-section');
+        });
+
+        document.getElementById('apply-loan-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('apply-loan-section');
+        });
+
+        document.getElementById('process-loans-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('process-loans-section');
+          this.updatePendingLoansTable();
+        });
+
+        document.getElementById('add-customer-queue-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('add-customer-queue-section');
+          this.updateServiceQueueTable();
+        });
+
+        document.getElementById('serve-customer-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.showSection('serve-customer-section');
+        });
+
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.bankSystem.logout();
+          document.getElementById('dashboard').classList.remove('active');
+          document.getElementById('auth-container').style.display = 'block';
+          document.querySelector('.login-form').classList.add('active');
+          document.querySelector('.Register-form').classList.remove('active');
+        });
+
+        // Form Submissions
+        document.getElementById('create-account-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleCreateAccount();
+        });
+
+        document.getElementById('search-account-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handleSearchAccount();
+        });
+
+        document.getElementById('deposit-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleDeposit();
+        });
+
+        document.getElementById('withdraw-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleWithdraw();
+        });
+
+        document.getElementById('view-history-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handleViewTransactionHistory();
+        });
+
+        document.getElementById('loan-application-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleLoanApplication();
+        });
+
+        document.getElementById('customer-queue-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleAddToQueue();
+        });
+
+        document.getElementById('serve-next-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.handleServeNextCustomer();
+        });
+
+        // Transaction history sorting
+        document.getElementById('oldest-first-btn')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.sortTransactionHistory('oldest');
+        });
+
+        document.getElementById('newest-first-btn')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.sortTransactionHistory('newest');
+        });
+      }
+
+      showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // Show the requested section
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Update page title
+        const title = document.getElementById(sectionId).querySelector('h2')?.textContent || 'Dashboard';
+        document.getElementById('page-title').textContent = title.toUpperCase();
+      }
+
+      updateDashboard() {
+        const stats = this.bankSystem.getStats();
+        
+        // Update stats cards
+        document.getElementById('total-accounts').textContent = stats.totalAccounts;
+        document.getElementById('savings-accounts').textContent = stats.savingsAccounts;
+        document.getElementById('current-accounts').textContent = stats.currentAccounts;
+        document.getElementById('customer-queue').textContent = stats.customerQueue;
+        document.getElementById('bank-balance').textContent = `₹ ${stats.bankBalance.toLocaleString()}`;
+        document.getElementById('pending-loans').textContent = stats.pendingLoans;
+        document.getElementById('approved-loans').textContent = stats.approvedLoans;
+        document.getElementById('total-transactions').textContent = stats.totalTransactions;
+        
+        // Update recent transactions table
+        const recentTransactions = this.bankSystem.getRecentTransactions();
+        const tbody = document.querySelector('#recent-transactions-table tbody');
+        tbody.innerHTML = '';
+        
+        recentTransactions.forEach(txn => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${txn.id}</td>
+            <td>${txn.accountNumber}</td>
+            <td>${txn.type}</td>
+            <td>₹ ${txn.amount.toLocaleString()}</td>
+            <td>${new Date(txn.date).toLocaleString()}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      updateAccountsTable() {
+        const accounts = this.bankSystem.accounts;
+        const tbody = document.querySelector('#accounts-table tbody');
+        tbody.innerHTML = '';
+        
+        accounts.forEach(account => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${account.accountNumber}</td>
+            <td>${account.customerName}</td>
+            <td>${account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}</td>
+            <td>₹ ${account.balance.toLocaleString()}</td>
+            <td>
+              <button class="action-btn">View</button>
+              <button class="action-btn">Edit</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      updatePendingLoansTable() {
+        const pendingLoans = this.bankSystem.getPendingLoans();
+        const tbody = document.querySelector('#pending-loans-table tbody');
+        tbody.innerHTML = '';
+        
+        if (pendingLoans.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = '<td colspan="5" class="no-data">No pending loan applications</td>';
+          tbody.appendChild(row);
+          return;
+        }
+        
+        pendingLoans.forEach(loan => {
+          const account = this.bankSystem.getAccount(loan.accountNumber);
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${loan.accountNumber}</td>
+            <td>₹ ${loan.amount.toLocaleString()}</td>
+            <td>${loan.purpose.charAt(0).toUpperCase() + loan.purpose.slice(1)}</td>
+            <td>${new Date(loan.applicationDate).toLocaleDateString()}</td>
+            <td>
+              <button class="action-btn approve-btn" data-account="${loan.accountNumber}">Approve</button>
+              <button class="action-btn reject-btn" data-account="${loan.accountNumber}">Reject</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+        
+        // Add event listeners to approve/reject buttons
+        document.querySelectorAll('.approve-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const accountNumber = e.target.getAttribute('data-account');
+            this.processLoan(accountNumber, true);
+          });
+        });
+        
+        document.querySelectorAll('.reject-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const accountNumber = e.target.getAttribute('data-account');
+            this.processLoan(accountNumber, false);
+          });
+        });
+      }
+
+      updateServiceQueueTable() {
+        const queue = this.bankSystem.getCurrentQueue();
+        const tbody = document.querySelector('#service-queue-table tbody');
+        tbody.innerHTML = '';
+        
+        if (queue.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = '<td colspan="4" class="no-data">Queue is empty</td>';
+          tbody.appendChild(row);
+          return;
+        }
+        
+        queue.forEach((item, index) => {
+          const account = this.bankSystem.getAccount(item.accountNumber);
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${item.accountNumber}</td>
+            <td>${account?.customerName || 'Unknown'}</td>
+            <td>${item.serviceType.charAt(0).toUpperCase() + item.serviceType.slice(1)}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      handleCreateAccount() {
+        const accountNumber = document.getElementById('account-number').value;
+        const customerName = document.getElementById('customer-name').value;
+        const accountType = document.getElementById('account-type').value;
+        const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
+        
+        if (!accountNumber || !customerName || isNaN(initialDeposit) || initialDeposit <= 0) {
+          alert('Please fill all fields with valid values');
+          return;
+        }
+        
+        const account = this.bankSystem.createAccount(
+          accountNumber, 
+          customerName, 
+          accountType, 
+          initialDeposit
+        );
+        
+        if (account) {
+          alert('Account created successfully!');
+          document.getElementById('create-account-form').reset();
+          this.updateDashboard();
+          this.updateAccountsTable();
+        } else {
+          alert('Account with this number already exists');
+        }
+      }
+
+      handleSearchAccount() {
+        const accountNumber = document.getElementById('search-account-number').value;
+        const account = this.bankSystem.getAccount(accountNumber);
+        const resultDiv = document.getElementById('search-result');
+        
+        if (account) {
+          document.getElementById('result-account-number').textContent = account.accountNumber;
+          document.getElementById('result-customer-name').textContent = account.customerName;
+          document.getElementById('result-account-type').textContent = 
+            account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1);
+          document.getElementById('result-balance').textContent = `₹ ${account.balance.toLocaleString()}`;
+          resultDiv.style.display = 'block';
+        } else {
+          alert('Account not found');
+          resultDiv.style.display = 'none';
+        }
+      }
+
+      handleDeposit() {
+        const accountNumber = document.getElementById('deposit-account-number').value;
+        const amount = parseFloat(document.getElementById('deposit-amount').value);
+        
+        if (!accountNumber || isNaN(amount) || amount <= 0) {
+          alert('Please enter valid account number and amount');
+          return;
+        }
+        
+        const transaction = this.bankSystem.deposit(accountNumber, amount);
+        
+        if (transaction) {
+          alert(`Deposit of ₹ ${amount.toLocaleString()} successful! Transaction ID: ${transaction.id}`);
+          document.getElementById('deposit-form').reset();
+          this.updateDashboard();
+        } else {
+          alert('Account not found');
+        }
+      }
+
+      handleWithdraw() {
+        const accountNumber = document.getElementById('withdraw-account-number').value;
+        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+        
+        if (!accountNumber || isNaN(amount) || amount <= 0) {
+          alert('Please enter valid account number and amount');
+          return;
+        }
+        
+        const transaction = this.bankSystem.withdraw(accountNumber, amount);
+        
+        if (transaction) {
+          alert(`Withdrawal of ₹ ${amount.toLocaleString()} successful! Transaction ID: ${transaction.id}`);
+          document.getElementById('withdraw-form').reset();
+          this.updateDashboard();
+        } else if (transaction === false) {
+          alert('Insufficient funds');
+        } else {
+          alert('Account not found');
+        }
+      }
+
+      handleViewTransactionHistory() {
+        const accountNumber = document.getElementById('history-account-number').value;
+        const account = this.bankSystem.getAccount(accountNumber);
+        const resultDiv = document.getElementById('transaction-history-result');
+        
+        if (account) {
+          const transactions = account.getTransactionHistory('newest');
+          const tbody = document.querySelector('#transaction-history-table tbody');
+          tbody.innerHTML = '';
+          
+          transactions.forEach(txn => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${txn.id}</td>
+              <td>${txn.type}</td>
+              <td>₹ ${Math.abs(txn.amount).toLocaleString()}</td>
+              <td>${new Date(txn.date).toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+          });
+          
+          resultDiv.style.display = 'block';
+        } else {
+          alert('Account not found');
+          resultDiv.style.display = 'none';
+        }
+      }
+
+      sortTransactionHistory(order) {
+        const accountNumber = document.getElementById('history-account-number').value;
+        const account = this.bankSystem.getAccount(accountNumber);
+        
+        if (account) {
+          const transactions = account.getTransactionHistory(order);
+          const tbody = document.querySelector('#transaction-history-table tbody');
+          tbody.innerHTML = '';
+          
+          transactions.forEach(txn => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${txn.id}</td>
+              <td>${txn.type}</td>
+              <td>₹ ${Math.abs(txn.amount).toLocaleString()}</td>
+              <td>${new Date(txn.date).toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+          });
+        }
+      }
+
+      handleLoanApplication() {
+        const accountNumber = document.getElementById('loan-account-number').value;
+        const amount = parseFloat(document.getElementById('loan-amount').value);
+        const purpose = document.getElementById('loan-purpose').value;
+        
+        if (!accountNumber || isNaN(amount) || amount <= 0) {
+          alert('Please enter valid account number and loan amount');
+          return;
+        }
+        
+        const loan = this.bankSystem.applyForLoan(accountNumber, amount, purpose);
+        
+        if (loan) {
+          alert(`Loan application submitted successfully for ₹ ${amount.toLocaleString()}`);
+          document.getElementById('loan-application-form').reset();
+          this.updateDashboard();
+        } else {
+          alert('Account not found');
+        }
+      }
+
+      processLoan(accountNumber, approve) {
+        const loan = this.bankSystem.processLoan(accountNumber, approve);
+        
+        if (loan) {
+          alert(`Loan application ${approve ? 'approved' : 'rejected'} successfully`);
+          this.updateDashboard();
+          this.updatePendingLoansTable();
+        } else {
+          alert('Loan application not found or already processed');
+        }
+      }
+
+      handleAddToQueue() {
+        const accountNumber = document.getElementById('queue-account-number').value;
+        const serviceType = document.getElementById('service-type').value;
+        
+        if (!accountNumber) {
+          alert('Please enter valid account number');
+          return;
+        }
+        
+        const success = this.bankSystem.addCustomerToQueue(accountNumber, serviceType);
+        
+        if (success) {
+          alert('Customer added to queue successfully');
+          document.getElementById('customer-queue-form').reset();
+          this.updateDashboard();
+          this.updateServiceQueueTable();
+        } else {
+          alert('Account not found');
+        }
+      }
+
+      handleServeNextCustomer() {
+        const nextCustomer = this.bankSystem.serveNextCustomer();
+        const noCustomersDiv = document.getElementById('no-customers');
+        const nextCustomerDiv = document.getElementById('next-customer');
+        
+        if (nextCustomer) {
+          const account = this.bankSystem.getAccount(nextCustomer.accountNumber);
+          document.getElementById('serving-account-number').textContent = nextCustomer.accountNumber;
+          document.getElementById('serving-customer-name').textContent = account?.customerName || 'Unknown';
+          document.getElementById('serving-service-type').textContent = 
+            nextCustomer.serviceType.charAt(0).toUpperCase() + nextCustomer.serviceType.slice(1);
+          
+          noCustomersDiv.style.display = 'none';
+          nextCustomerDiv.style.display = 'block';
+        } else {
+          noCustomersDiv.style.display = 'block';
+          nextCustomerDiv.style.display = 'none';
+        }
+        
+        this.updateDashboard();
+        this.updateServiceQueueTable();
+      }
+    }
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', () => {
+      new UIController();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: #f5f6fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    /* Form Styles */
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input, 
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .form-col {
+      flex: 1;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #34495e;
+    }
+    .btn-success {
+      background: #27ae60;
+      color: white;
+    }
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+    .btn-warning {
+      background: #f39c12;
+      color: white;
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    tr:hover {
+      background: #f8f9fa;
+    }
+    .status-pending {
+      color: #f39c12;
+      font-weight: 600;
+    }
+    .status-approved {
+      color: #27ae60;
+      font-weight: 600;
+    }
+    .status-rejected {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+
+    /* Loan Calculator */
+    .calculator {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .calculator-result {
+      font-weight: 600;
+      margin-top: 10px;
+      padding: 10px;
+      background: #e8f4fd;
+      border-radius: 5px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .form-container, .table-container {
+        padding: 15px;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+      .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-group input, 
+      .form-group select,
+      .form-group textarea {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-hand-holding-usd"></i> Loan Management</h1>
+
+    <!-- Loan Application Form -->
+    <div class="form-container">
+      <h2><i class="fas fa-file-signature"></i> New Loan Application</h2>
+      <form id="loan-application-form">
+        <div class="form-row">
+          <div class="form-col">
+            <div class="form-group">
+              <label for="applicant-name">Applicant Name</label>
+              <input type="text" id="applicant-name" required>
+            </div>
+            <div class="form-group">
+              <label for="account-number">Account Number</label>
+              <input type="text" id="account-number" required>
+            </div>
+          </div>
+          <div class="form-col">
+            <div class="form-group">
+              <label for="loan-amount">Loan Amount (₹)</label>
+              <input type="number" id="loan-amount" required min="1000">
+            </div>
+            <div class="form-group">
+              <label for="loan-term">Loan Term (Months)</label>
+              <input type="number" id="loan-term" required min="1" max="60">
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="loan-purpose">Purpose of Loan</label>
+          <select id="loan-purpose" required>
+            <option value="">Select Purpose</option>
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+            <option value="education">Education</option>
+            <option value="home">Home Loan</option>
+            <option value="vehicle">Vehicle Loan</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="loan-description">Additional Details</label>
+          <textarea id="loan-description" rows="3"></textarea>
+        </div>
+        
+        <!-- Loan Calculator -->
+        <div class="calculator">
+          <h3><i class="fas fa-calculator"></i> EMI Calculator</h3>
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="interest-rate">Interest Rate (%)</label>
+                <input type="number" id="interest-rate" value="12" step="0.1" min="1" max="30">
+              </div>
+            </div>
+            <div class="form-col">
+              <button type="button" id="calculate-btn" class="btn btn-primary">
+                <i class="fas fa-calculator"></i> Calculate EMI
+              </button>
+            </div>
+          </div>
+          <div class="calculator-result" id="emi-result">
+            EMI: ₹ 0.00
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-paper-plane"></i> Submit Application
+        </button>
+        <button type="reset" class="btn btn-danger">
+          <i class="fas fa-times"></i> Reset Form
+        </button>
+      </form>
+    </div>
+
+    <!-- Loan Applications Table -->
+    <div class="table-container">
+      <h2><i class="fas fa-tasks"></i> Loan Applications</h2>
+      <div class="filter-controls" style="margin-bottom: 20px;">
+        <select id="loan-status-filter" class="btn">
+          <option value="all">All Applications</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <table id="loans-table">
+        <thead>
+          <tr>
+            <th>App ID</th>
+            <th>Applicant</th>
+            <th>Amount (₹)</th>
+            <th>Term</th>
+            <th>Purpose</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="loans-list">
+          <!-- Loans will be loaded here -->
+        </tbody>
+      </table>
+      <div id="no-loans" style="text-align: center; padding: 20px; display: none;">
+        <i class="fas fa-info-circle" style="font-size: 24px; color: #7f8c8d;"></i>
+        <p>No loan applications found</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Approval Modal -->
+  <div id="approval-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+      <h3 id="modal-title">Process Loan Application</h3>
+      <p id="modal-content">Application details...</p>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button id="approve-btn" class="btn btn-success">Approve</button>
+        <button id="reject-btn" class="btn btn-danger">Reject</button>
+        <button id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for Loan Management -->
+  <script>
+    // Loan Data Storage
+    let loans = JSON.parse(localStorage.getItem('bankLoans')) || [
+      { 
+        id: 'LN1001', 
+        applicantName: 'Bhargav', 
+        accountNumber: 'AC001', 
+        amount: 50000, 
+        term: 12, 
+        purpose: 'education', 
+        status: 'approved', 
+        date: '2023-06-10T09:30:00',
+        interestRate: 12,
+        emi: 4442.44
+      },
+      { 
+        id: 'LN1002', 
+        applicantName: 'Akash', 
+        accountNumber: 'AC002', 
+        amount: 200000, 
+        term: 24, 
+        purpose: 'home', 
+        status: 'pending', 
+        date: '2023-06-15T14:20:00',
+        interestRate: 12,
+        emi: 9414.70
+      }
+    ];
+
+    // DOM Elements
+    const loanForm = document.getElementById('loan-application-form');
+    const loansList = document.getElementById('loans-list');
+    const noLoansMsg = document.getElementById('no-loans');
+    const statusFilter = document.getElementById('loan-status-filter');
+    const modal = document.getElementById('approval-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    let currentLoanId = null;
+
+    // Display Loans
+    function displayLoans(filterStatus = 'all') {
+      loansList.innerHTML = '';
+      
+      const filteredLoans = filterStatus === 'all' 
+        ? loans 
+        : loans.filter(loan => loan.status === filterStatus);
+      
+      if (filteredLoans.length === 0) {
+        noLoansMsg.style.display = 'block';
+        return;
+      }
+      
+      noLoansMsg.style.display = 'none';
+      
+      filteredLoans.forEach(loan => {
+        const row = document.createElement('tr');
+        const statusClass = `status-${loan.status}`;
+        const purposeText = loan.purpose.charAt(0).toUpperCase() + loan.purpose.slice(1);
+        
+        row.innerHTML = `
+          <td>${loan.id}</td>
+          <td>${loan.applicantName}</td>
+          <td>${loan.amount.toLocaleString()}</td>
+          <td>${loan.term} months</td>
+          <td>${purposeText}</td>
+          <td class="${statusClass}">${loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}</td>
+          <td>${new Date(loan.date).toLocaleDateString()}</td>
+          <td>
+            ${loan.status === 'pending' ? `
+              <button class="btn btn-primary" onclick="showApprovalModal('${loan.id}')">
+                <i class="fas fa-check-circle"></i> Process
+              </button>
+            ` : `
+              <button class="btn btn-warning" onclick="viewLoanDetails('${loan.id}')">
+                <i class="fas fa-eye"></i> View
+              </button>
+            `}
+          </td>
+        `;
+        loansList.appendChild(row);
+      });
+    }
+
+    // Calculate EMI
+    function calculateEMI(principal, rate, months) {
+      const monthlyRate = rate / 100 / 12;
+      const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / 
+                 (Math.pow(1 + monthlyRate, months) - 1);
+      return emi.toFixed(2);
+    }
+
+    // Show Approval Modal
+    function showApprovalModal(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+      
+      currentLoanId = loanId;
+      modalTitle.textContent = `Process Loan ${loanId}`;
+      modalContent.innerHTML = `
+        <p><strong>Applicant:</strong> ${loan.applicantName}</p>
+        <p><strong>Amount:</strong> ₹ ${loan.amount.toLocaleString()}</p>
+        <p><strong>Term:</strong> ${loan.term} months</p>
+        <p><strong>Purpose:</strong> ${loan.purpose}</p>
+        <p><strong>EMI:</strong> ₹ ${loan.emi}</p>
+      `;
+      modal.style.display = 'flex';
+    }
+
+    // View Loan Details
+    function viewLoanDetails(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+      
+      alert(`Loan Details:\n\nID: ${loan.id}\nApplicant: ${loan.applicantName}\nAccount: ${loan.accountNumber}\nAmount: ₹ ${loan.amount.toLocaleString()}\nTerm: ${loan.term} months\nPurpose: ${loan.purpose}\nStatus: ${loan.status}\nEMI: ₹ ${loan.emi}\nDate: ${new Date(loan.date).toLocaleString()}`);
+    }
+
+    // Process Loan Application
+    function processLoan(loanId, approve) {
+      const loanIndex = loans.findIndex(l => l.id === loanId);
+      if (loanIndex === -1) return;
+      
+      loans[loanIndex].status = approve ? 'approved' : 'rejected';
+      saveLoans();
+      displayLoans(statusFilter.value);
+      modal.style.display = 'none';
+      
+      alert(`Loan ${loanId} has been ${approve ? 'approved' : 'rejected'}`);
+    }
+
+    // Save Loans to Local Storage
+    function saveLoans() {
+      localStorage.setItem('bankLoans', JSON.stringify(loans));
+    }
+
+    // Event Listeners
+    loanForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newLoan = {
+        id: 'LN' + Math.floor(1000 + Math.random() * 9000),
+        applicantName: document.getElementById('applicant-name').value,
+        accountNumber: document.getElementById('account-number').value,
+        amount: parseFloat(document.getElementById('loan-amount').value),
+        term: parseInt(document.getElementById('loan-term').value),
+        purpose: document.getElementById('loan-purpose').value,
+        status: 'pending',
+        date: new Date().toISOString(),
+        interestRate: parseFloat(document.getElementById('interest-rate').value),
+        emi: parseFloat(document.getElementById('emi-result').textContent.replace('EMI: ₹ ', '').replace(',', ''))
+      };
+      
+      loans.push(newLoan);
+      saveLoans();
+      displayLoans(statusFilter.value);
+      loanForm.reset();
+      document.getElementById('emi-result').textContent = 'EMI: ₹ 0.00';
+      
+      alert(`Loan application ${newLoan.id} submitted successfully!`);
+    });
+
+    document.getElementById('calculate-btn').addEventListener('click', function() {
+      const amount = parseFloat(document.getElementById('loan-amount').value) || 0;
+      const term = parseInt(document.getElementById('loan-term').value) || 1;
+      const rate = parseFloat(document.getElementById('interest-rate').value) || 12;
+      
+      const emi = calculateEMI(amount, rate, term);
+      document.getElementById('emi-result').textContent = `EMI: ₹ ${emi}`;
+    });
+
+    statusFilter.addEventListener('change', function() {
+      displayLoans(this.value);
+    });
+
+    document.getElementById('approve-btn').addEventListener('click', function() {
+      processLoan(currentLoanId, true);
+    });
+
+    document.getElementById('reject-btn').addEventListener('click', function() {
+      processLoan(currentLoanId, false);
+    });
+
+    document.getElementById('cancel-modal-btn').addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+
+    // Initialize
+    displayLoans();
+  </script>
+</body>
+</html>

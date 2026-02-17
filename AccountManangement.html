@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: #f5f6fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    /* Back Button Styles */
+    .btn-back {
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-back:hover {
+      background: #34495e;
+    }
+
+    /* Form Styles */
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input, 
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #34495e;
+    }
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+    .btn-success {
+      background: #27ae60;
+      color: white;
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: white;
+    }
+    tr:hover {
+      background: #f8f9fa;
+    }
+    .action-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Search Results */
+    #search-result {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      display: none;
+    }
+    .result-item {
+      margin-bottom: 15px;
+    }
+    .result-item label {
+      font-weight: 600;
+      display: inline-block;
+      width: 150px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .form-container, .table-container {
+        padding: 15px;
+      }
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+      .btn, .btn-back {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .action-btns {
+        flex-direction: column;
+      }
+      .form-group input, 
+      .form-group select {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Back Button -->
+    <button onclick="window.history.back()" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+
+    <h1><i class="fas fa-users"></i> Account Management</h1>
+
+    <!-- Create Account Form -->
+    <div class="form-container">
+      <h2><i class="fas fa-plus-circle"></i> Create New Account</h2>
+      <form id="create-account-form">
+        <div class="form-group">
+          <label for="account-number">Account Number</label>
+          <input type="text" id="account-number" required placeholder="e.g., AC1001">
+        </div>
+        <div class="form-group">
+          <label for="customer-name">Customer Name</label>
+          <input type="text" id="customer-name" required placeholder="e.g., Ali Khan">
+        </div>
+        <div class="form-group">
+          <label for="account-type">Account Type</label>
+          <select id="account-type" required>
+            <option value="">Select Account Type</option>
+            <option value="savings">Savings Account</option>
+            <option value="current">Current Account</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="initial-deposit">Initial Deposit (₹)</label>
+          <input type="number" id="initial-deposit" required placeholder="e.g., 5000" min="100">
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Create Account
+        </button>
+        <button type="reset" class="btn btn-danger">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </form>
+    </div>
+
+    <!-- View All Accounts -->
+    <div class="table-container">
+      <h2><i class="fas fa-list"></i> All Accounts</h2>
+      <table id="accounts-table">
+        <thead>
+          <tr>
+            <th>Account #</th>
+            <th>Customer Name</th>
+            <th>Type</th>
+            <th>Balance (₹)</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="accounts-list">
+          <!-- Accounts will be added here dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Search Account -->
+    <div class="form-container">
+      <h2><i class="fas fa-search"></i> Search Account</h2>
+      <div class="form-group">
+        <input type="text" id="search-input" placeholder="Enter account number or name">
+      </div>
+      <button id="search-btn" class="btn btn-primary">
+        <i class="fas fa-search"></i> Search
+      </button>
+      
+      <div id="search-result">
+        <h3><i class="fas fa-file-alt"></i> Account Details</h3>
+        <div class="result-item">
+          <label>Account Number:</label>
+          <span id="result-account-number">-</span>
+        </div>
+        <div class="result-item">
+          <label>Customer Name:</label>
+          <span id="result-customer-name">-</span>
+        </div>
+        <div class="result-item">
+          <label>Account Type:</label>
+          <span id="result-account-type">-</span>
+        </div>
+        <div class="result-item">
+          <label>Balance:</label>
+          <span id="result-balance">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for Full Functionality -->
+  <script>
+    // Account Data Storage
+    let accounts = JSON.parse(localStorage.getItem('bankAccounts')) || [
+      { accountNumber: 'AC001', customerName: 'Bhargav', accountType: 'savings', balance: 5000 },
+      { accountNumber: 'AC002', customerName: 'Akash', accountType: 'current', balance: 7500 },
+      { accountNumber: 'AC003', customerName: 'Bhaskar', accountType: 'savings', balance: 3200 }
+    ];
+
+    // DOM Elements
+    const createForm = document.getElementById('create-account-form');
+    const accountsList = document.getElementById('accounts-list');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const searchResult = document.getElementById('search-result');
+
+    // Display All Accounts
+    function displayAccounts() {
+      accountsList.innerHTML = '';
+      accounts.forEach(account => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${account.accountNumber}</td>
+          <td>${account.customerName}</td>
+          <td>${account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1)}</td>
+          <td>${account.balance.toLocaleString()}</td>
+          <td class="action-btns">
+            <button class="btn btn-primary" onclick="viewAccount('${account.accountNumber}')">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <button class="btn btn-danger" onclick="deleteAccount('${account.accountNumber}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        `;
+        accountsList.appendChild(row);
+      });
+    }
+
+    // Create New Account
+    createForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const accountNumber = document.getElementById('account-number').value;
+      const customerName = document.getElementById('customer-name').value;
+      const accountType = document.getElementById('account-type').value;
+      const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
+
+      // Validate
+      if (accounts.some(acc => acc.accountNumber === accountNumber)) {
+        alert('Account number already exists!');
+        return;
+      }
+
+      // Create account
+      const newAccount = {
+        accountNumber,
+        customerName,
+        accountType,
+        balance: initialDeposit
+      };
+
+      accounts.push(newAccount);
+      saveToLocalStorage();
+      displayAccounts();
+      createForm.reset();
+      
+      alert(`Account ${accountNumber} created successfully!`);
+    });
+
+    // Search Account
+    searchBtn.addEventListener('click', function() {
+      const searchTerm = searchInput.value.toLowerCase();
+      if (!searchTerm) {
+        alert('Please enter search term');
+        return;
+      }
+
+      const foundAccount = accounts.find(acc => 
+        acc.accountNumber.toLowerCase() === searchTerm || 
+        acc.customerName.toLowerCase().includes(searchTerm)
+      );
+
+      if (foundAccount) {
+        document.getElementById('result-account-number').textContent = foundAccount.accountNumber;
+        document.getElementById('result-customer-name').textContent = foundAccount.customerName;
+        document.getElementById('result-account-type').textContent = 
+          foundAccount.accountType.charAt(0).toUpperCase() + foundAccount.accountType.slice(1);
+        document.getElementById('result-balance').textContent = foundAccount.balance.toLocaleString();
+        searchResult.style.display = 'block';
+      } else {
+        alert('Account not found!');
+        searchResult.style.display = 'none';
+      }
+    });
+
+    // View Account Details
+    function viewAccount(accountNumber) {
+      const account = accounts.find(acc => acc.accountNumber === accountNumber);
+      if (account) {
+        alert(`Account Details:\n\nNumber: ${account.accountNumber}\nName: ${account.customerName}\nType: ${account.accountType}\nBalance: ₹ ${account.balance}`);
+      }
+    }
+
+    // Delete Account
+    function deleteAccount(accountNumber) {
+      if (confirm(`Are you sure you want to delete account ${accountNumber}?`)) {
+        accounts = accounts.filter(acc => acc.accountNumber !== accountNumber);
+        saveToLocalStorage();
+        displayAccounts();
+        alert('Account deleted successfully!');
+      }
+    }
+
+    // Save to Local Storage
+    function saveToLocalStorage() {
+      localStorage.setItem('bankAccounts', JSON.stringify(accounts));
+    }
+
+    // Initialize
+    displayAccounts();
+  </script>
+</body>
+</html>

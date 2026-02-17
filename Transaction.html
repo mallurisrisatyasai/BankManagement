@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction History</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    body {
+      background: #f5f6fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    /* Form Styles */
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-group input, 
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      margin-right: 10px;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #34495e;
+    }
+    .btn-secondary {
+      background: #7f8c8d;
+      color: white;
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+      overflow-x: auto;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      text-align: left;
+    }
+    th {
+      background: #2c3e50;
+      color: white;
+      position: sticky;
+      top: 0;
+    }
+    tr:hover {
+      background: #f8f9fa;
+    }
+    .deposit {
+      color: #27ae60;
+    }
+    .withdrawal {
+      color: #e74c3c;
+    }
+
+    /* Filter Controls */
+    .filter-controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .form-container, .table-container {
+        padding: 15px;
+      }
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+      .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      .filter-controls {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-group input, 
+      .form-group select {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-exchange-alt"></i> Transaction History</h1>
+
+    <!-- Transaction Search Form -->
+    <div class="form-container">
+      <h2><i class="fas fa-search"></i> Find Transactions</h2>
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label for="account-number">Account Number</label>
+          <input type="text" id="account-number" placeholder="e.g., AC1001">
+        </div>
+        <div class="filter-group">
+          <label for="transaction-type">Transaction Type</label>
+          <select id="transaction-type">
+            <option value="all">All Transactions</option>
+            <option value="deposit">Deposits</option>
+            <option value="withdrawal">Withdrawals</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="date-range">Date Range</label>
+          <select id="date-range">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+        </div>
+      </div>
+      <button id="search-btn" class="btn btn-primary">
+        <i class="fas fa-search"></i> Search Transactions
+      </button>
+      <button id="reset-btn" class="btn btn-secondary">
+        <i class="fas fa-redo"></i> Reset Filters
+      </button>
+    </div>
+
+    <!-- Transaction History Table -->
+    <div class="table-container">
+      <h2><i class="fas fa-history"></i> Transaction Records</h2>
+      <table id="transactions-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Account #</th>
+            <th>Type</th>
+            <th>Amount (₹)</th>
+            <th>Date & Time</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-list">
+          <!-- Transactions will load here -->
+        </tbody>
+      </table>
+      <div id="no-transactions" style="text-align: center; padding: 20px; display: none;">
+        <i class="fas fa-info-circle" style="font-size: 24px; color: #7f8c8d;"></i>
+        <p>No transactions found matching your criteria</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript for Transaction History -->
+  <script>
+    // Sample Transaction Data (Replace with real data in production)
+    let transactions = [
+      { id: 'TXN1001', accountNumber: 'AC001', type: 'deposit', amount: 5000, date: '2023-06-15T10:30:00', description: 'Initial deposit' },
+      { id: 'TXN1002', accountNumber: 'AC002', type: 'deposit', amount: 7500, date: '2023-06-15T11:15:00', description: 'Initial deposit' },
+      { id: 'TXN1003', accountNumber: 'AC001', type: 'withdrawal', amount: 2000, date: '2023-06-16T14:45:00', description: 'ATM withdrawal' },
+      { id: 'TXN1004', accountNumber: 'AC003', type: 'deposit', amount: 3200, date: '2023-06-17T09:20:00', description: 'Initial deposit' },
+      { id: 'TXN1005', accountNumber: 'AC002', type: 'transfer', amount: 1500, date: '2023-06-18T16:30:00', description: 'Transfer to AC001' }
+    ];
+
+    // DOM Elements
+    const accountInput = document.getElementById('account-number');
+    const typeSelect = document.getElementById('transaction-type');
+    const dateSelect = document.getElementById('date-range');
+    const searchBtn = document.getElementById('search-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const transactionsList = document.getElementById('transactions-list');
+    const noTransactionsMsg = document.getElementById('no-transactions');
+
+    // Display All Transactions
+    function displayTransactions(filteredTransactions = transactions) {
+      transactionsList.innerHTML = '';
+      
+      if (filteredTransactions.length === 0) {
+        noTransactionsMsg.style.display = 'block';
+        return;
+      }
+      
+      noTransactionsMsg.style.display = 'none';
+      
+      filteredTransactions.forEach(txn => {
+        const row = document.createElement('tr');
+        const typeClass = txn.type === 'deposit' ? 'deposit' : 'withdrawal';
+        const typeText = txn.type.charAt(0).toUpperCase() + txn.type.slice(1);
+        
+        row.innerHTML = `
+          <td>${txn.id}</td>
+          <td>${txn.accountNumber}</td>
+          <td class="${typeClass}">${typeText}</td>
+          <td>${txn.amount.toLocaleString()}</td>
+          <td>${new Date(txn.date).toLocaleString()}</td>
+          <td>${txn.description}</td>
+        `;
+        transactionsList.appendChild(row);
+      });
+    }
+
+    // Filter Transactions
+    function filterTransactions() {
+      const accountFilter = accountInput.value.trim().toUpperCase();
+      const typeFilter = typeSelect.value;
+      const dateFilter = dateSelect.value;
+      
+      let filtered = transactions;
+      
+      // Account filter
+      if (accountFilter) {
+        filtered = filtered.filter(txn => 
+          txn.accountNumber.includes(accountFilter)
+        );
+      }
+      
+      // Type filter
+      if (typeFilter !== 'all') {
+        filtered = filtered.filter(txn => 
+          txn.type === typeFilter
+        );
+      }
+      
+      // Date filter
+      const now = new Date();
+      if (dateFilter !== 'all') {
+        filtered = filtered.filter(txn => {
+          const txnDate = new Date(txn.date);
+          
+          if (dateFilter === 'today') {
+            return txnDate.toDateString() === now.toDateString();
+          }
+          if (dateFilter === 'week') {
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            return txnDate >= weekStart;
+          }
+          if (dateFilter === 'month') {
+            return txnDate.getMonth() === now.getMonth() && 
+                   txnDate.getFullYear() === now.getFullYear();
+          }
+          return true;
+        });
+      }
+      
+      displayTransactions(filtered);
+    }
+
+    // Reset Filters
+    function resetFilters() {
+      accountInput.value = '';
+      typeSelect.value = 'all';
+      dateSelect.value = 'all';
+      displayTransactions();
+    }
+
+    // Event Listeners
+    searchBtn.addEventListener('click', filterTransactions);
+    resetBtn.addEventListener('click', resetFilters);
+
+    // Initialize
+    displayTransactions();
+  </script>
+</body>
+</html>
